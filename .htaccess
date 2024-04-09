@@ -2,7 +2,19 @@ RewriteEngine on
 
 RewriteBase /
 
+RewriteRule ^(polaroid|photo)/size/([a-z]+)/anonyme/([0-9]+)\.jpg $1.php?uid=$3&size=$2&anonyme=true [L,QSA]
 
-RewriteRule ^polaroid/size/([a-z]+)/([0-9]+)\.jpg polaroid.php?uid=$2&size=$1 [L,QSA]
+RewriteRule ^(polaroid|photo)/anonyme/([0-9]+)\.jpg $1.php?uid=$2&anonyme=true [L,QSA]
 
-RewriteRule ^polaroid/([0-9]+)\.jpg polaroid.php?uid=$1 [L,QSA]
+RewriteRule ^(polaroid|photo)/size/([a-z]+)/classic/([0-9]+)\.jpg $1.php?uid=$3&size=$2&classic=true [L,QSA]
+
+RewriteRule ^(polaroid|photo)/classic/([0-9]+)\.jpg $1.php?uid=$2&classic=true [L,QSA]
+
+RewriteRule ^(polaroid|photo)/size/([a-z]+)/([0-9]+)\.jpg $1.php?uid=$3&size=$2 [L,QSA]
+
+RewriteRule ^(polaroid|photo)/([0-9]+)\.jpg $1.php?uid=$2 [L,QSA]
+
+RewriteRule ^([0-9]+)\.json json.php?uid=$1 [L,QSA]
+
+RewriteRule ^([0-9]+)\.pdf pdf.php?uid=$1 [L,QSA]
+

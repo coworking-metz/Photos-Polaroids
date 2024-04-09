@@ -1,6 +1,7 @@
 <?php
 
 function get_metal($annee) {
+    
     $annee_courante = date("Y");
     $depuis = $annee_courante - $annee; 
     
@@ -16,6 +17,18 @@ function get_metal($annee) {
 }
 function get_medaille($ranking) {
 
+    if(!$ranking) return;
     $w = get_metal($ranking);
-    return svgToPng(CHEMIN_MEDAILLES.$w.'.svg',['annee'=>$ranking]);
+
+    $cle = 'medaille-'.$w.'-'.$ranking;
+
+    $content = redis_get($cle);
+
+    if($content) {
+        return to_temp_file($content);
+    } else {
+        $png = remove_background(svgToPng(CHEMIN_MEDAILLES.$w.'.svg',['annee'=>$ranking]));
+        redis_set($cle, file_get_contents($png));
+        return $png;        
+    }
 }

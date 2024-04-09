@@ -1,4 +1,26 @@
 <?php
+function get_urls($uid) {
+    $data = get_polaroid_data($uid);
+
+    $sizes = ['micro','small','medium','big'];
+    $payload = ['pdf'=>URL_SITE.''.$uid.'.pdf'];
+    foreach(['photo', 'polaroid'] as $cle) {
+        $payload[$cle] = [];
+        foreach($sizes as $size) {
+            $payload[$cle][$size]=URL_SITE.$cle.'/size/'.$size.'/'.$uid.'.jpg';
+        }
+    }
+    $payload['anonyme'] = [];
+    foreach($sizes as $size) {
+        $payload['anonyme'][$size]=URL_SITE.'polaroid/size/'.$size.'/anonyme/'.$uid.'.jpg';
+    }
+    $payload['classic'] = [];
+    foreach($sizes as $size) {
+        $payload['classic'][$size]=URL_SITE.'polaroid/size/'.$size.'/classic/'.$uid.'.jpg';
+    }
+
+    return $payload;
+}
 
 function get_polaroid_data($uid)
 {
@@ -22,7 +44,18 @@ function generer_polaroid($data, $params = [])
 
     $quality = $params["quality"] ?? 90;
     $size = $params["size"] ?? false;
-
+    $anonyme = $params["anonyme"] ?? false;
+    $classic = $params["classic"] ?? false;
+    if($anonyme) {
+        $data['nom']=nom_random(); 
+        if($data['visite']) {
+            $data['description'] = 'Visite & Journée d\'éssai';
+        } else {
+            $data["photo"] = $options['photo_par_defaut'];
+            $data["alpha"] = $options['photo_par_defaut_alpha'];
+            $data['description'] = 'Adhérente du Poulailler';
+        }
+    }
     if ($data["legacy"]) {
         $img = imagecreatefromfile(url_to_file($data["legacy"]));
 
@@ -62,7 +95,7 @@ function generer_polaroid($data, $params = [])
             $img = $resizedImage;
         }
     } else {
-        if ($image_fond_pola) {
+        if (!$classic && $image_fond_pola) {
             $photo = $data["alpha"];
         } else {
             $photo = $data["photo"];
@@ -179,8 +212,9 @@ function generer_polaroid($data, $params = [])
 
         // Add the text to the image
         @imagettftext($img, $fontSize, 0, $x, $y, $fontColor, $fontFile, $text);
-
-        if ($data["description"] && $data["complement"]) {
+        $description = $data["description"]??'';
+        $complement = $data["complement"]??'';
+        if ($description && $complement) {
             $fontSize = 35;
             $line = 0.94;
         } else {
@@ -189,7 +223,7 @@ function generer_polaroid($data, $params = [])
         }
         $fontFile = CHEMIN_FONTS . "/EvelethCleanThin.ttf";
 
-        if ($text = stripslashes($data["description"])) {
+        if ($text = stripslashes($description)) {
             // Get bounding box of the text
             $textBox = imagettfbbox($fontSize, 0, $fontFile, $text);
             $textWidth = $textBox[2] - $textBox[0];
@@ -210,7 +244,7 @@ function generer_polaroid($data, $params = [])
             );
         }
 
-        if ($text = stripslashes($data["complement"])) {
+        if ($text = stripslashes($complement)) {
             // Get bounding box of the text
             $textBox = imagettfbbox($fontSize, 0, $fontFile, $text);
             $textWidth = $textBox[2] - $textBox[0];
@@ -236,37 +270,37 @@ function generer_polaroid($data, $params = [])
             $originalHeight = imagesy($img);
 
         $medaillePath = get_medaille($data['ranking']);
-        if($medaillePath) {
+        if(!$classic && $medaillePath) {
+            // file_put_contents(CHEMIN_SITE.'test.png', file_get_contents($medaillePath));
+            // echo '<div style="background:red" ><img src="/test.png"></div>';exit;
+            
             // header('Content-type: image/png');
             // readfile($medaillePath);
             // exit;
 
-            // Charger l'image de la médaille
             $medaille = imagecreatefrompng($medaillePath);
-            $background = imagecolorallocate($medaille , 0, 0, 0);
-            imagecolortransparent($medaille, $background);  
-            
+
             $largeurMedaille = imagesx($medaille);
             $hauteurMedaille = imagesy($medaille);
 
-            // Calculer les nouvelles dimensions de la médaille pour être 20% de la largeur de $img, en conservant le ratio d'aspect
-            $nouvelleLargeur = intval($originalWidth * 0.2);
-            $ratio = $nouvelleLargeur / $largeurMedaille;
-            $nouvelleHauteur = intval($hauteurMedaille * $ratio);
-
-            // Redimensionner l'image de la médaille
-            $medailleRedimensionnee = imagecreatetruecolor($nouvelleLargeur, $nouvelleHauteur);
-            imagealphablending( $medailleRedimensionnee, false );
-            imagesavealpha( $medailleRedimensionnee, true );
-            imagecopyresampled($medailleRedimensionnee, $medaille, 0, 0, 0, 0, $nouvelleLargeur, $nouvelleHauteur, $largeurMedaille, $hauteurMedaille);
-
+            // // Calculer les nouvelles dimensions de la médaille pour être 20% de la largeur de $img, en conservant le ratio d'aspect
+            // $nouvelleLargeur = intval($originalWidth * 0.2);
+            // $ratio = $nouvelleLargeur / $largeurMedaille;
+            // $nouvelleHauteur = intval($hauteurMedaille * $ratio);
+            // if($nouvelleLargeur < $largeurMedaille) {
+            //     // Redimensionner l'image de la médaille
+            //     $medailleRedimensionnee = imagecreatetruecolor($nouvelleLargeur, $nouvelleHauteur);
+            //     imagecopyresampled($medailleRedimensionnee, $medaille, 0, 0, 0, 0, $nouvelleLargeur, $nouvelleHauteur, $largeurMedaille, $hauteurMedaille);
+            //     $medaille = $medailleRedimensionnee;
+            //     $largeurMedaille = $nouvelleLargeur;
+            //     $hauteurMedaille = $nouvelleHauteur;
+            // }
+            
             // Calculer la position de la médaille pour la placer dans le coin inférieur droit
-            $x = $originalWidth - $nouvelleLargeur - $demie_bande;
-            $y = $frameHeight;
-            imagealphablending( $img, false );
-            imagesavealpha( $img, true );            
+            $x = $originalWidth - $largeurMedaille - $demie_bande;
+            $y = $frameHeight - $bande;
             // Placer l'image de la médaille sur l'image principale
-            imagecopy($img, $medailleRedimensionnee, $x, $y, 0, 0, $nouvelleLargeur, $nouvelleHauteur);
+            imagecopy($img, $medaille, $x, $y, 0, 0, $largeurMedaille, $hauteurMedaille);
 
         }
         

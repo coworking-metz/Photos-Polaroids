@@ -1,0 +1,8 @@
+RewriteEngine on
+
+RewriteBase /
+
+
+RewriteRule ^polaroid/size/([a-z]+)/([0-9]+)\.jpg polaroid.php?uid=$2&size=$1 [L,QSA]
+
+RewriteRule ^polaroid/([0-9]+)\.jpg polaroid.php?uid=$1 [L,QSA]

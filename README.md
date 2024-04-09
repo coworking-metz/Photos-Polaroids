@@ -20,7 +20,7 @@ Accéder à la route `/{wpUserId}.json` pour afficher la liste des toutes les im
 
 Exemple : `https://photos.coworking-metz.fr/225.json`
 
-```json
+```JSON5
 {
   "pdf": "https://photos.coworking-metz.fr/225.pdf", // Url du fichier PDF destiné aux impressions
   "photo": { // Urls de toutes les tailles de la photo du coworker brute (pas de cadre pola)

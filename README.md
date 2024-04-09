@@ -22,26 +22,34 @@ Exemple : `https://photos.coworking-metz.fr/225.json`
 
 ```JSON5
 {
-  "pdf": "https://photos.coworking-metz.fr/225.pdf", // Url du fichier PDF destiné aux impressions
-  "photo": { // Urls de toutes les tailles de la photo du coworker brute (pas de cadre pola)
+    // Url du fichier PDF destiné aux impressions
+  "pdf": "https://photos.coworking-metz.fr/225.pdf", 
+  "photo": { 
+    // Urls de toutes les tailles de la photo du coworker brute (pas de cadre pola)
     "micro": "https://photos.coworking-metz.fr/photo/size/micro/225.jpg",
     "small": "https://photos.coworking-metz.fr/photo/size/small/225.jpg",
     "medium": "https://photos.coworking-metz.fr/photo/size/medium/225.jpg",
     "big": "https://photos.coworking-metz.fr/photo/size/big/225.jpg"
   },
-  "polaroid": { // Urls de toutes les tailles du polaroid du coworker (avec badge d'ancienneté et fond événementiels)
+  "polaroid": { 
+    // Urls de toutes les tailles du polaroid du coworker 
+    // (avec badge d'ancienneté et fond événementiels)
     "micro": "https://photos.coworking-metz.fr/polaroid/size/micro/225.jpg",
     "small": "https://photos.coworking-metz.fr/polaroid/size/small/225.jpg",
     "medium": "https://photos.coworking-metz.fr/polaroid/size/medium/225.jpg",
     "big": "https://photos.coworking-metz.fr/polaroid/size/big/225.jpg"
   },
-  "anonyme": {// Urls de toutes les tailles du polaroid anonyme du coworker (avec badge d'ancienneté et fond événementiels mais avec faux nom et photo par défaut)
+  "anonyme": {
+    // Urls de toutes les tailles du polaroid anonyme du coworker 
+    // (avec badge d'ancienneté et fond événementiels mais avec faux nom et photo par défaut)
     "micro": "https://photos.coworking-metz.fr/polaroid/size/micro/anonyme/225.jpg",
     "small": "https://photos.coworking-metz.fr/polaroid/size/small/anonyme/225.jpg",
     "medium": "https://photos.coworking-metz.fr/polaroid/size/medium/anonyme/225.jpg",
     "big": "https://photos.coworking-metz.fr/polaroid/size/big/anonyme/225.jpg"
   },
-  "classic": { // Urls de toutes les tailles du polaroid classique du coworker (sans badge d'ancienneté ni fond événementiels)
+  "classic": { 
+    // Urls de toutes les tailles du polaroid classique du coworker 
+    // (sans badge d'ancienneté ni fond événementiels)
     "micro": "https://photos.coworking-metz.fr/polaroid/size/micro/classic/225.jpg",
     "small": "https://photos.coworking-metz.fr/polaroid/size/small/classic/225.jpg",
     "medium": "https://photos.coworking-metz.fr/polaroid/size/medium/classic/225.jpg",

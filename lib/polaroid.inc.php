@@ -2,24 +2,33 @@
 function get_urls($uid) {
     $data = get_polaroid_data($uid);
 
+    $all=[];
     $sizes = ['micro','small','medium','big'];
     $payload = ['pdf'=>URL_SITE.''.$uid.'.pdf'];
     foreach(['photo', 'polaroid'] as $cle) {
         $payload[$cle] = [];
         foreach($sizes as $size) {
-            $payload[$cle][$size]=URL_SITE.$cle.'/size/'.$size.'/'.$uid.'.jpg';
+            $url = URL_SITE.$cle.'/size/'.$size.'/'.$uid.'.jpg';
+            $all[]=$url;
+            $payload[$cle][$size]=$url;
         }
     }
     $payload['anonyme'] = [];
     foreach($sizes as $size) {
-        $payload['anonyme'][$size]=URL_SITE.'polaroid/size/'.$size.'/anonyme/'.$uid.'.jpg';
+        $url=URL_SITE.'polaroid/size/'.$size.'/anonyme/'.$uid.'.jpg';
+        $all[]=$url;
+        $payload['anonyme'][$size]=$url;
     }
     $payload['classic'] = [];
     foreach($sizes as $size) {
-        $payload['classic'][$size]=URL_SITE.'polaroid/size/'.$size.'/classic/'.$uid.'.jpg';
+        $url = URL_SITE.'polaroid/size/'.$size.'/classic/'.$uid.'.jpg';
+        $all[]=$url;
+        $payload['classic'][$size]=$url;
     }
-
+    cloudflareHit($all);
+    
     return $payload;
+
 }
 
 function get_polaroid_data($uid)
@@ -344,4 +353,5 @@ function generer_polaroid($data, $params = [])
     imagejpeg($img, null, $quality);
 
     imagedestroy($img);
+    cloudflareHit();
 }

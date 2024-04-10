@@ -20,7 +20,6 @@ function outputImageWithHeaders($imagePath, $width = null, $destinationPath = fa
     } else {
         $image = imagecreatefromstring(file_get_contents($imagePath));
     }
-
     if ($width && imagesx($image) > $width) {
         $height = (int) (imagesy($image) * ($width / imagesx($image)));
         $resizedImage = imagescale($image, $width, $height);
@@ -41,7 +40,7 @@ function outputImageWithHeaders($imagePath, $width = null, $destinationPath = fa
             write_and_output_image($image, $destinationPath, 'png');
         }
     }
-
+    cloudflareHit();
     imagedestroy($image);
     exit;
 }
@@ -51,15 +50,15 @@ function write_and_output_image($image, $path, $type)
 {
     if ($type == 'jpg') {
         imagejpeg($image);
-        return imagejpeg($image, $path);
+        return $path ? imagejpeg($image, $path) : true;
     }
     if ($type == 'gif') {
         imagegif($image);
-        return imagegif($image, $path);
+        return $path ? imagegif($image, $path) : true;
     }
     if ($type == 'png') {
         imagepng($image);
-        return imagepng($image, $path);
+        return $path ? imagepng($image, $path) : true;
     }
 }
 

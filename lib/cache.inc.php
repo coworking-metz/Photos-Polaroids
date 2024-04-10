@@ -1,5 +1,26 @@
 <?php
 
+function cloudflareHit($urls=false) {
+    if(!$urls) {
+        $urls = (empty($_SERVER['HTTPS']) ? 'http' : 'https') . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";    
+    }
+
+    
+    if(!is_array($urls)) {
+        $urls = [$urls];
+    }
+
+    $data = ['urls' => $urls];
+    $options = [
+        'http' => [
+            'header'  => "Content-type: application/json\r\n",
+            'method'  => 'POST',
+            'content' => json_encode($data),
+        ],
+    ];
+    $context = stream_context_create($options);
+    file_get_contents('https://cloudflare.coworking-metz.fr/hit', false, $context);
+}
 
 // function noCacheHeaders() {
 //     header("Cache-Control: no-cache, must-revalidate, max-age=0");

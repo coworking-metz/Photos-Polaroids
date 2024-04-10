@@ -4,6 +4,7 @@ function redis_connect() {
     if(!isset($GLOBALS['redis-instance'])) {
         $redis = new Redis();
         $redis->connect('127.0.0.1', 6379);
+        $redis->select(3);
         $GLOBALS['redis-instance'] = $redis;
     }
     return $GLOBALS['redis-instance'];

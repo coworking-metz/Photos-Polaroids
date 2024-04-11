@@ -19,4 +19,5 @@ include 'cache.inc.php';
 include 'images.inc.php';
 include 'ranking.inc.php';
 include 'redis.inc.php';
+include 'tailles.inc.php';
 include 'polaroid.inc.php';

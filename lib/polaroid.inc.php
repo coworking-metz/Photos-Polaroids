@@ -3,7 +3,7 @@ function get_urls($uid) {
     $data = get_polaroid_data($uid);
 
     $all=[];
-    $sizes = ['micro','small','medium','big'];
+    $sizes = array_keys(get_tailles());
     $payload = ['pdf'=>URL_SITE.''.$uid.'.pdf'];
     foreach(['photo', 'polaroid'] as $cle) {
         $payload[$cle] = [];
@@ -51,10 +51,12 @@ function generer_polaroid($data, $params = [])
     $pola_source = url_to_file($options["cadre"]);
     $image_fond_pola = url_to_file($options["image_fond_pola"] ?? false);
 
-    $quality = $params["quality"] ?? 90;
     $size = $params["size"] ?? false;
     $anonyme = $params["anonyme"] ?? false;
     $classic = $params["classic"] ?? false;
+    $taille = get_taille($size);
+
+    
     if($anonyme) {
         $data['nom']=nom_random(); 
         if($data['visite']) {
@@ -68,14 +70,7 @@ function generer_polaroid($data, $params = [])
     if ($data["legacy"]) {
         $img = imagecreatefromfile(url_to_file($data["legacy"]));
 
-        $newWidth = false;
-        if ($size == "micro") {
-            $newWidth = 20;
-        } elseif ($size == "small") {
-            $newWidth = 200;
-        } else {
-            $newWidth = 400;
-        }
+        $newWidth = $taille['width'];
         if ($newWidth) {
             // Obtient les dimensions originales de l'image
             $originalWidth = imagesx($img);
@@ -313,16 +308,10 @@ function generer_polaroid($data, $params = [])
 
         }
         
-        if ($size != "big") {
+        if ($taille['slug'] != "big") {
 
-            if ($size == "micro") {
-                $newWidth = 20;
-            } elseif ($size == "small") {
-                $newWidth = 200;
-            } else {
-                $newWidth = 400;
-            }
-
+            $newWidth = $taille['width'];
+            
             $aspectRatio = $originalWidth / $originalHeight;
             $newHeight = intval($newWidth / $aspectRatio);
 
@@ -350,7 +339,7 @@ function generer_polaroid($data, $params = [])
     cacheHeaders();
     // 5. Output the image as jpeg
     header("Content-Type: image/jpeg");
-    imagejpeg($img, null, $quality);
+    imagejpeg($img, null, $taille['quality']??false);
 
     imagedestroy($img);
     cloudflareHit();

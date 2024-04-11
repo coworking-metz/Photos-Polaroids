@@ -10,7 +10,7 @@
  * @param int|null $width Optional width to resize the image.
  * @param string $destinationPath Path where the  image will be written.
  */
-function outputImageWithHeaders($imagePath, $width = null, $destinationPath = false)
+function outputImageWithHeaders($imagePath, $width = null, $quality = 90, $destinationPath = false)
 {
 
 
@@ -28,16 +28,14 @@ function outputImageWithHeaders($imagePath, $width = null, $destinationPath = fa
     }
     if ($extension === 'png') {
         header('Content-Type: image/jpeg');
-        write_and_output_image($image, $destinationPath, 'jpg');
+        write_and_output_image($image, $quality, $destinationPath, 'jpg');
     } else {
         $mimeType = 'image/'.str_replace('jpg','jpeg',$extension);
         header("Content-Type: $mimeType");
         if ($mimeType === 'image/jpeg') {
-            write_and_output_image($image, $destinationPath, 'jpg');
-        } elseif ($mimeType === 'image/gif') {
-            write_and_output_image($image, $destinationPath, 'gif');
+            write_and_output_image($image, $quality, $destinationPath, 'jpg');
         } elseif ($mimeType === 'image/png') {
-            write_and_output_image($image, $destinationPath, 'png');
+            write_and_output_image($image, $quality, $destinationPath, 'png');
         }
     }
     cloudflareHit();
@@ -46,19 +44,15 @@ function outputImageWithHeaders($imagePath, $width = null, $destinationPath = fa
 }
 
 
-function write_and_output_image($image, $path, $type)
+function write_and_output_image($image, $quality, $path, $type)
 {
     if ($type == 'jpg') {
-        imagejpeg($image);
-        return $path ? imagejpeg($image, $path) : true;
-    }
-    if ($type == 'gif') {
-        imagegif($image);
-        return $path ? imagegif($image, $path) : true;
+        imagejpeg($image, null, $quality);
+        return $path ? imagejpeg($image, $path, $quality) : true;
     }
     if ($type == 'png') {
-        imagepng($image);
-        return $path ? imagepng($image, $path) : true;
+        imagepng($image, null,  ceil($quality/10));
+        return $path ? imagepng($image, $path, ceil($quality/10)) : true;
     }
 }
 

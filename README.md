@@ -61,3 +61,8 @@ Exemple : `https://photos.coworking-metz.fr/225.json`
   }
 }
 ```
+
+# Impressions des pdf
+le fichier PDF est imprimable tel quel dans l'imprimante Canon SELPHY en utilisant les reglages ci-dessous
+
+![Réglages d'impression](polaprint.jpg)

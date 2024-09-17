@@ -67,7 +67,7 @@ function generer_polaroid($data, $params = [])
             $data['description'] = 'Adhérente du Poulailler';
         }
     }
-    if ($data["legacy"]) {
+    if (!$anonyme && $data["legacy"]) {
         $img = imagecreatefromfile(url_to_file($data["legacy"]));
 
         $newWidth = $taille['width'];

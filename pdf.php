@@ -5,6 +5,8 @@ $uid = $_GET['id'] ?? $_GET['uid'] ?? false;
 
 $w = 100;
 $h = 148;
+$bordure = $_GET['bordure']??2.8;
+
 $payload = get_urls($uid);
 
 $image_url = $payload['classic']['big'];
@@ -24,7 +26,6 @@ $pdf->AddPage();
 
 // Insérer l'image
 // $pdf->Image($image_path, 5, 5, 90, 110.07);
-$bordure = 2.8;
 $largeur = 100;
 $hauteur = 122.3;
 $ratio = $hauteur / $largeur;

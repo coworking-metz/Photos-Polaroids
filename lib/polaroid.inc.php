@@ -1,34 +1,34 @@
 <?php
-function get_urls($uid) {
+function get_urls($uid)
+{
     $data = get_polaroid_data($uid);
 
-    $all=[];
+    $all = [];
     $sizes = array_keys(get_tailles());
-    $payload = ['pdf'=>URL_SITE.''.$uid.'.pdf'];
-    foreach(['photo', 'polaroid'] as $cle) {
+    $payload = ['pdf' => URL_SITE . '' . $uid . '.pdf'];
+    foreach (['photo', 'polaroid'] as $cle) {
         $payload[$cle] = [];
-        foreach($sizes as $size) {
-            $url = URL_SITE.$cle.'/size/'.$size.'/'.$uid.'.jpg';
-            $all[]=$url;
-            $payload[$cle][$size]=$url;
+        foreach ($sizes as $size) {
+            $url = URL_SITE . $cle . '/size/' . $size . '/' . $uid . '.jpg';
+            $all[] = $url;
+            $payload[$cle][$size] = $url;
         }
     }
     $payload['anonyme'] = [];
-    foreach($sizes as $size) {
-        $url=URL_SITE.'polaroid/size/'.$size.'/anonyme/'.$uid.'.jpg';
-        $all[]=$url;
-        $payload['anonyme'][$size]=$url;
+    foreach ($sizes as $size) {
+        $url = URL_SITE . 'polaroid/size/' . $size . '/anonyme/' . $uid . '.jpg';
+        $all[] = $url;
+        $payload['anonyme'][$size] = $url;
     }
     $payload['classic'] = [];
-    foreach($sizes as $size) {
-        $url = URL_SITE.'polaroid/size/'.$size.'/classic/'.$uid.'.jpg';
-        $all[]=$url;
-        $payload['classic'][$size]=$url;
+    foreach ($sizes as $size) {
+        $url = URL_SITE . 'polaroid/size/' . $size . '/classic/' . $uid . '.jpg';
+        $all[] = $url;
+        $payload['classic'][$size] = $url;
     }
     cloudflareHit($all);
-    
-    return $payload;
 
+    return $payload;
 }
 
 function get_polaroid_data($uid)
@@ -42,9 +42,25 @@ function get_polaroid_data($uid)
         return;
     }
 
-    return json_decode($content, true);
+    $data = json_decode($content, true);
+
+
+    $data = url_to_path($data);
+    return $data;
 }
 
+function url_to_path($data)
+{
+    if (is_array($data)) {
+        foreach ($data as &$item) {
+            $item = url_to_path($item);
+        }
+    } else {
+        $new = str_replace('https://www.coworking-metz.fr/', '/home/coworking/www/', $data);
+        if (file_exists($new)) $data = $new;
+    }
+    return $data;
+}
 function generer_polaroid($data, $params = [])
 {
     $options = $data["options"] ?? [];
@@ -56,10 +72,10 @@ function generer_polaroid($data, $params = [])
     $classic = $params["classic"] ?? false;
     $taille = get_taille($size);
 
-    
-    if($anonyme) {
-        $data['nom']=nom_random(); 
-        if($data['visite']) {
+
+    if ($anonyme) {
+        $data['nom'] = nom_random();
+        if ($data['visite']) {
             $data['description'] = 'Visite & Journée d\'éssai';
         } else {
             $data["photo"] = $options['photo_par_defaut'];
@@ -110,7 +126,7 @@ function generer_polaroid($data, $params = [])
         $img = imagecreatetruecolor($width, $height);
 
         $bande = intval(($height * 5.3) / 100);
-        $demie_bande = ceil($bande/2);
+        $demie_bande = ceil($bande / 2);
         $frameRatio = 1069 / 1032;
         $frameWidth = $width - 2 * $bande;
         $frameHeight = intval($frameWidth * $frameRatio);
@@ -216,8 +232,8 @@ function generer_polaroid($data, $params = [])
 
         // Add the text to the image
         @imagettftext($img, $fontSize, 0, $x, $y, $fontColor, $fontFile, $text);
-        $description = $data["description"]??'';
-        $complement = $data["complement"]??'';
+        $description = $data["description"] ?? '';
+        $complement = $data["complement"] ?? '';
         if ($description && $complement) {
             $fontSize = 35;
             $line = 0.94;
@@ -269,15 +285,15 @@ function generer_polaroid($data, $params = [])
             );
         }
 
-            // Get the current width and height of the image
-            $originalWidth = imagesx($img);
-            $originalHeight = imagesy($img);
+        // Get the current width and height of the image
+        $originalWidth = imagesx($img);
+        $originalHeight = imagesy($img);
 
         $medaillePath = get_medaille($data['ranking']);
-        if(!$classic && $medaillePath) {
+        if (!$classic && $medaillePath) {
             // file_put_contents(CHEMIN_SITE.'test.png', file_get_contents($medaillePath));
             // echo '<div style="background:red" ><img src="/test.png"></div>';exit;
-            
+
             // header('Content-type: image/png');
             // readfile($medaillePath);
             // exit;
@@ -299,19 +315,18 @@ function generer_polaroid($data, $params = [])
             //     $largeurMedaille = $nouvelleLargeur;
             //     $hauteurMedaille = $nouvelleHauteur;
             // }
-            
+
             // Calculer la position de la médaille pour la placer dans le coin inférieur droit
             $x = $originalWidth - $largeurMedaille - $demie_bande;
             $y = $frameHeight - $bande;
             // Placer l'image de la médaille sur l'image principale
             imagecopy($img, $medaille, $x, $y, 0, 0, $largeurMedaille, $hauteurMedaille);
-
         }
-        
+
         if ($taille['slug'] != "big") {
 
             $newWidth = $taille['width'];
-            
+
             $aspectRatio = $originalWidth / $originalHeight;
             $newHeight = intval($newWidth / $aspectRatio);
 
@@ -339,7 +354,7 @@ function generer_polaroid($data, $params = [])
     cacheHeaders();
     // 5. Output the image as jpeg
     header("Content-Type: image/jpeg");
-    imagejpeg($img, null, $taille['quality']??false);
+    imagejpeg($img, null, $taille['quality'] ?? false);
 
     imagedestroy($img);
     cloudflareHit();

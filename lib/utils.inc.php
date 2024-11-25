@@ -20,14 +20,24 @@ function purge_temp_files() {
         unlink($file);
     }
 }
+/**
+ * Récupère le contenu d'une URL et le met en cache dans un fichier temporaire.
+ *
+ * @param string $url URL à récupérer.
+ * @return string Contenu de l'URL.
+ */
 function get_content($url) {
     $hash = sha1($url);
+    $filePath = '/tmp/local-get_content-' . $hash;
 
-    $content = redis_get('local-'.$hash);
-    if(!$content) {
+    // Vérifie si le fichier existe déjà dans /tmp
+    if (!file_exists($filePath)) {
         $content = file_get_contents($url);
-        redis_set('local-'.$hash, $content);
+        file_put_contents($filePath, $content);
+    } else {
+        $content = file_get_contents($filePath);
     }
+
     return $content;
 }
 function erreur($code) {

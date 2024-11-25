@@ -15,20 +15,20 @@ function get_metal($annee) {
         return 'bronze';
     
 }
+
 function get_medaille($ranking) {
+    if (!$ranking) return;
 
-    if(!$ranking) return;
     $w = get_metal($ranking);
+    $cle = 'medaille-' . $ranking;
+    $filePath = '/tmp/' . $cle;
 
-    $cle = 'medaille-'.$w.'-'.$ranking;
-
-    $content = redis_get($cle);
-
-    if($content) {
-        return to_temp_file($content);
+    // Vérifie si le fichier de cache existe déjà
+    if (file_exists($filePath)) {
+        return to_temp_file(file_get_contents($filePath));
     } else {
-        $png = remove_background(svgToPng(CHEMIN_MEDAILLES.$w.'.svg',['annee'=>$ranking]));
-        redis_set($cle, file_get_contents($png));
-        return $png;        
+        $png = remove_background(svgToPng(CHEMIN_MEDAILLES . $w . '.svg', ['annee' => $ranking]));
+        file_put_contents($filePath, file_get_contents($png));
+        return $png;
     }
 }

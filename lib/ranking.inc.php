@@ -4,9 +4,9 @@ function get_metal($annee) {
     
     $annee_courante = date("Y");
     $depuis = $annee_courante - $annee; 
-    
-    if ($annee_courante == $annee)
+    if ($annee === $annee_courante)
         return 'chocolat';
+
     if ($depuis > 4)
         return 'gold';
     else if ($depuis > 2)
@@ -20,7 +20,7 @@ function get_medaille($ranking) {
     if (!$ranking) return;
 
     $w = get_metal($ranking);
-    $cle = 'medaille-' . $ranking;
+    $cle = 'medaille-' . date('Y').'-'.$ranking;
     $filePath = '/tmp/' . $cle;
 
     // Vérifie si le fichier de cache existe déjà

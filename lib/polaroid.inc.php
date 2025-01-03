@@ -291,30 +291,12 @@ function generer_polaroid($data, $params = [])
 
         $medaillePath = get_medaille($data['ranking']);
         if (!$classic && $medaillePath) {
-            // file_put_contents(CHEMIN_SITE.'test.png', file_get_contents($medaillePath));
-            // echo '<div style="background:red" ><img src="/test.png"></div>';exit;
-
-            // header('Content-type: image/png');
-            // readfile($medaillePath);
-            // exit;
 
             $medaille = imagecreatefrompng($medaillePath);
 
             $largeurMedaille = imagesx($medaille);
             $hauteurMedaille = imagesy($medaille);
 
-            // // Calculer les nouvelles dimensions de la médaille pour être 20% de la largeur de $img, en conservant le ratio d'aspect
-            // $nouvelleLargeur = intval($originalWidth * 0.2);
-            // $ratio = $nouvelleLargeur / $largeurMedaille;
-            // $nouvelleHauteur = intval($hauteurMedaille * $ratio);
-            // if($nouvelleLargeur < $largeurMedaille) {
-            //     // Redimensionner l'image de la médaille
-            //     $medailleRedimensionnee = imagecreatetruecolor($nouvelleLargeur, $nouvelleHauteur);
-            //     imagecopyresampled($medailleRedimensionnee, $medaille, 0, 0, 0, 0, $nouvelleLargeur, $nouvelleHauteur, $largeurMedaille, $hauteurMedaille);
-            //     $medaille = $medailleRedimensionnee;
-            //     $largeurMedaille = $nouvelleLargeur;
-            //     $hauteurMedaille = $nouvelleHauteur;
-            // }
 
             // Calculer la position de la médaille pour la placer dans le coin inférieur droit
             $x = $originalWidth - $largeurMedaille - $demie_bande;

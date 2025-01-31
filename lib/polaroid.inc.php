@@ -72,10 +72,11 @@ function generer_polaroid($data, $params = [])
     $classic = $params["classic"] ?? false;
     $taille = get_taille($size);
 
-
     if ($anonyme) {
         $data['nom'] = nom_random();
-        if ($data['visite']) {
+        if ($data['nomade']) {
+            $data['description'] = 'Coworker-euse "nomade"';
+        } else if ($data['visite']) {
             $data['description'] = 'Visite & Journée d\'éssai';
         } else {
             $data["photo"] = $options['photo_par_defaut'];
@@ -289,7 +290,9 @@ function generer_polaroid($data, $params = [])
         $originalWidth = imagesx($img);
         $originalHeight = imagesy($img);
 
+		if(!$data['nomade']) {
         $medaillePath = get_medaille($data['ranking']);
+
         if (!$classic && $medaillePath) {
 
             $medaille = imagecreatefrompng($medaillePath);
@@ -303,6 +306,7 @@ function generer_polaroid($data, $params = [])
             $y = $frameHeight - $bande;
             // Placer l'image de la médaille sur l'image principale
             imagecopy($img, $medaille, $x, $y, 0, 0, $largeurMedaille, $hauteurMedaille);
+        }
         }
 
         if ($taille['slug'] != "big") {
